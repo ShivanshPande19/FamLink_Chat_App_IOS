@@ -1,17 +1,31 @@
-//
-//  FamLink_Chat_AppApp.swift
-//  FamLink_Chat_App
-//
-//  Created by SHIVANSH PANDE on 13/07/24.
-//
-
 import SwiftUI
+import Firebase
 
 @main
-struct FamLink_Chat_AppApp: App {
+struct Famlink_Chat_App: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    @State var isUserCurrentlyLoggedOut = FirebaseManager.shared.auth.currentUser?.uid == nil
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if isUserCurrentlyLoggedOut {
+                LoginView(didCompleteLoginProcess: {
+                    self.isUserCurrentlyLoggedOut = false
+                })
+            } else {
+                MainMessagesView()
+            }
         }
+    }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
+        return true
     }
 }
